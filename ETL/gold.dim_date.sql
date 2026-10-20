@@ -1,8 +1,3 @@
---define date range
-	select 
-		min(order_date) as min_date,
-		max(order_date) as max_date
-	from silver."Sale Transaction";
 --create gold.dim_date
 	create table gold.dim_date (
 		full_date date primary key,
@@ -42,6 +37,5 @@
 	    extract (isodow from full_date)::integer as day_of_week,
 	    to_char (full_date, 'FMDay') as day_name
 	from d;
---view table
-	select * from gold.dim_date;
+
 

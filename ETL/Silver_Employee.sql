@@ -1,28 +1,22 @@
---create table
-	create table silver.Employee as
---khử duplicate
-	WITH cte AS (
-	SELECT
-		*,
-		row_number() over(PARTITION BY employee_id ORDER BY ingestion_at DESC) AS row_number
-	from bronze."Employee"
-	)
-	SELECT *
-	FROM cte
-	WHERE ROW_NUMBER = 1;
---view table
-	select *
-	from bronze."Employee";
-
---update table
-	alter table silver.Employee 
-		alter column date_of_birth type date 
-			using date_of_birth::DATE,
-		alter column join_date type date
-			using join_date::DATE,
-		alter column phone type text,
-		alter column effective_date type date
-			using effective_date::DATE,
-		drop column index,
-		drop column ingestion_at,
-		drop column row_number;
+create table silver.employee as
+with cte as (
+    select
+        *,
+        row_number() over (
+            partition by employee_id
+            order by ingestion_at desc
+        ) as rn
+    from bronze."Employee"
+)
+select
+    employee_id,
+    full_name,
+    date_of_birth::date as date_of_birth,
+    join_date::date as join_date,
+    phone::text as phone,
+    email,
+    department,
+    position,
+    effective_date::date as effective_date
+from cte
+where rn = 1;
